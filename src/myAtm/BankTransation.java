@@ -11,5 +11,7 @@ interface BankTransation {
 	
 	void showTransations(int accountNo);
 	
+	boolean transferAmmount(int accountNo, int ammount);
+	
 
 }
