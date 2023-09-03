@@ -2,8 +2,9 @@ package myAtm;
 
 
 abstract public class Account {
+	
 	public int accountNo;
-	public int ammount;
+	public int balance;
 	public int password;
 	
 	abstract public void checkBalance();

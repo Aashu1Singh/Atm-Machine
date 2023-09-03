@@ -11,41 +11,20 @@ import myAtm.Account;
 
 public class Bank implements BankTransation{
 	
-	HashMap<String, List<Account>> accounts = new HashMap<>();
-	
 	
 	private String bankname;
+	private AtmOfBank atm;
+	private Account loggedInUserAcc;
 	
-	Bank(String bankName){
+	Bank(String bankName, AtmOfBank atm){
 		this.bankname = bankName;
-	}
-	
-
-	public void createAccount() {
-		
-		Account a1 = new AccountHolder(201, 208, 102);
-		Account a2 = new AccountHolder(202, 200, 202);
-		Account a3 = new AccountHolder(301, 20, 103);
-		Account a4 = new AccountHolder(302, 200, 203);
-		
-		List<Account> sbiAcc = new ArrayList<>();
-		sbiAcc.add(a1);
-		sbiAcc.add(a2);
-		
-		List<Account> pnbAcc = new ArrayList<>();
-		pnbAcc.add(a3);
-		pnbAcc.add(a4);
-		
-		
-		accounts.put("SBI", sbiAcc);
-		accounts.put("PNB", pnbAcc);
-	
+		this.atm = atm;
 	}
 	
 	
 	public Account validate(int userAccountNo, int userPassWord) {
 		
-		List<Account> userAccounts = accounts.get(this.bankname);
+		List<Account> userAccounts = atm.accounts.get(this.bankname);
 		Account userAccount = null;
 		
 		for(Account a : userAccounts) {
@@ -58,11 +37,12 @@ public class Bank implements BankTransation{
 		
 		if(userAccount == null) {
 			System.out.println("This accoount doesn't exit in "+ this.bankname);
-			AtmOfBank.startAtm();
+			atm.startAtm(atm);
 		}
 		
 		if(userPassWord == userAccount.password) {
 			System.out.println("Logged in the account " + userAccountNo);
+			this.loggedInUserAcc = userAccount;
 			return userAccount;
 		}else {
 			System.out.println("Wrong password ");
@@ -73,34 +53,38 @@ public class Bank implements BankTransation{
 	
 	public void storeTransation(int accountNo, String message) {
 		
-		ArrayList<String> transation = transations.get(accountNo);
-		if(transation == null) {
+		ArrayList<String> transaction = transations.get(accountNo);
+		
+		if(transaction == null) {
 			ArrayList<String> temp = new ArrayList<>();
-			temp.add(message);
 			
+			temp.add(message);
 			transations.put(accountNo, temp);
 		}else {
-			transation.add(message);
-			transations.put(accountNo , transation);
+			transaction.add(message);
+			transations.put(accountNo , transaction);
 		}
+	
 		
 	}
 			
 	
-	public void showTransations(int accountNo) {
+	public void showTransations() {
 		
-		if(transations.get(accountNo)== null) {
+		ArrayList<String> foundTransation = transations.get(loggedInUserAcc.accountNo);
+		
+		
+		if(foundTransation == null) {
 			System.out.println("\nNo previous transations found");
 			return;
 			
 		}
 
 		System.out.println("Your previous transations are\n");
-		for(ArrayList<String> transation : transations.values()) {
+		for(String transation : foundTransation) {
+			
 			int i = 1;
-			for(String s : transation) {
-				System.out.println(i++ +") " + s);
-			}
+			System.out.println(i++ +") " + transation);
 		}
 	}
 	
@@ -108,8 +92,6 @@ public class Bank implements BankTransation{
 		
 		
 		System.out.println("\nLogged in into " + this.bankname + " server");
-		
-		createAccount();
 		
 		System.out.println("\nEnter the bank account number");
 		
@@ -153,7 +135,7 @@ public class Bank implements BankTransation{
 			
 				if(task == 6) {
 					user = null;
-					AtmOfBank.startAtm();
+					atm.startAtm(atm);
 				}
 			
 			
@@ -173,10 +155,10 @@ public class Bank implements BankTransation{
 						break;
 					
 					case 4:
-						showTransations(userAccountNo);
+						showTransations();
 						break;
 					case 5:
-//						validate(userAccountNo);
+						transferAmmount();
 						break;
 					case 6:
 						System.out.println("Logged out of "+this.bankname);
@@ -198,29 +180,67 @@ public class Bank implements BankTransation{
 				
 	}
 	
-	public boolean transferAmmount(int accountNo, int ammount) {
+	
+	public Account beneficiaryPresent(int beneficiaryAccountNo, int ammountToTransfer) {
 		
-		boolean accFound = false;
-		
-		for(Map.Entry<String, List<Account>> a: accounts.entrySet()) {
+		for(Map.Entry<String, List<Account>> a: atm.accounts.entrySet()) {
 			
 			List<Account> temp = a.getValue();
-			
+
 			for(Account ac : temp) {
-				if(ac.accountNo == accountNo) {
-					accFound = true;
-					System.out.println("The amount " + ammount + " has been credited in account no "+ac.accountNo);
-					ac.ammount += ammount;
+				if(ac.accountNo == beneficiaryAccountNo) {
+					
+					
+					loggedInUserAcc.balance = loggedInUserAcc.balance - ammountToTransfer;
+					storeTransation(loggedInUserAcc.accountNo, "The amount "+ ammountToTransfer + " has been deducted from your account");
+					ac.balance = ac.balance + ammountToTransfer;
+					storeTransation(ac.accountNo, "The amount "+ ammountToTransfer + " has been credited in your account");
+					return ac;
 				}
-			}
-			
-			if(!accFound) {
-				System.out.println("\nAccount not found");
-			}
-				
+			}	
+		}
+		return null;
+	}
+	
+	public void transferAmmount() {
+		System.out.println("\nEnter the bank account number to transfer amount");
+		Scanner sc = new Scanner(System.in);
+		
+		
+		int beneficiaryAccountNo = sc.nextInt();
+		
+		if(loggedInUserAcc.accountNo == beneficiaryAccountNo) {
+			System.out.println("You cannot transfer money in your account");
+			return;
 		}
 		
-		return accFound;
+		System.out.println("Enter ammount to transfer");
+		int ammountToTransfer = sc.nextInt();
+		
+		if(ammountToTransfer > loggedInUserAcc.balance) {
+			System.out.println("Insufficient balance in your account");
+			return;
+		}
+		
+		System.out.println("\nEnter your passsword");
+		int password = sc.nextInt();
+		
+		if(loggedInUserAcc.password != password) {
+			System.out.println("Incorrect password");
+			return;
+		}
+		
+		
+		Account benificiaryAcc = beneficiaryPresent(beneficiaryAccountNo, ammountToTransfer);
+		
+		
+		if(benificiaryAcc == null) {
+			System.out.println("account not found");
+		}else {
+			System.out.println("The amount " + ammountToTransfer + " has been trasfered to account no " + beneficiaryAccountNo);
+		}
+
+
 		
 	}
 }

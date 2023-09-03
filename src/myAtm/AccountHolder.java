@@ -6,20 +6,22 @@ import java.util.Scanner;
 public class AccountHolder extends Account{
 	
 	AccountHolder(int a){
+		
 		accountNo = a;
-		this.ammount= 20000;
+		this.balance= 20000;
 		this.password = 0000;
 	}
 	
 	AccountHolder(int a, int ammount, int password){
+		
 		accountNo = a;
-		this.ammount= ammount;
+		this.balance= ammount;
 		this.password = password;
 	}
 
 
 	public void checkBalance() {
-		System.out.println("\nYour balance is " + this.ammount);
+		System.out.println("\nYour balance is " + this.balance);
 	}
 	
 	
@@ -30,9 +32,9 @@ public class AccountHolder extends Account{
 		
 		int ammount = sc.nextInt();	
 		
-		this.ammount = this.ammount + ammount;
+		this.balance = this.balance + ammount;
 		
-		System.out.println("\nyour new account balance is Rs " + this.ammount);
+		System.out.println("\nyour new account balance is Rs " + this.balance);
 		return ammount;
 	}
 
@@ -60,11 +62,11 @@ public class AccountHolder extends Account{
 		System.out.println("\nEnter the ammount you want to withdraw");
 		
 		int ammount = sc.nextInt();		
-		if(ammount > this.ammount) {
+		if(ammount > this.balance) {
 			System.out.println("\nInsufficient balance");
 			return "Withdrawn failed due to Insufficient balance";
 		}else {
-			this.ammount = this.ammount - ammount;
+			this.balance = this.balance - ammount;
 			System.out.println("Rs "+ ammount + " withdrawn ");
 			return "Rs " + ammount + " has been deducted from you account";
 		}

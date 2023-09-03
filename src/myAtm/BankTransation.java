@@ -9,9 +9,9 @@ interface BankTransation {
 	
 	void storeTransation(int accountNo, String tran);
 	
-	void showTransations(int accountNo);
+	void showTransations();
 	
-	boolean transferAmmount(int accountNo, int ammount);
+	void transferAmmount();
 	
 
 }
