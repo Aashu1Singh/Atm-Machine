@@ -3,6 +3,7 @@ package myAtm;
 import java.util.Scanner;
 
 public class AccountHolder extends Account {
+	
 
 	AccountHolder(int a) {
 
@@ -11,15 +12,16 @@ public class AccountHolder extends Account {
 		this.password = 0000;
 	}
 
-	AccountHolder(int a, int ammount, int password) {
+	AccountHolder(int a, int ammount, int password, String name) {
 
 		accountNo = a;
 		this.balance = ammount;
 		this.password = password;
+		this.accountHolderName = name;
 	}
 
 	public void checkBalance() {
-		System.out.println("\nYour balance is " + this.balance);
+		System.out.println("\nYour balance is Rs " + this.balance);
 	}
 
 	public int deposit() {
@@ -39,6 +41,10 @@ public class AccountHolder extends Account {
 
 		int attempts = 3;
 		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("\nEnter the ammount you want to withdraw");
+
+		int ammount = sc.nextInt();
 
 		while (attempts > 0) {
 			System.out.println("\nEnter your account password");
@@ -55,16 +61,14 @@ public class AccountHolder extends Account {
 			return "You entered wrong password three times";
 		}
 
-		System.out.println("\nEnter the ammount you want to withdraw");
 
-		int ammount = sc.nextInt();
 		if (ammount > this.balance) {
 			System.out.println("\nInsufficient balance");
 			return "Withdrawn failed due to Insufficient balance";
 		} else {
 			this.balance = this.balance - ammount;
-			System.out.println("Rs " + ammount + " withdrawn ");
-			return "Rs " + ammount + " has been deducted from you account";
+			System.out.println("You have withdrawn the ammount Rs " + ammount);
+			return "You had withdrawn the ammount Rs " + ammount;
 		}
 
 	}
