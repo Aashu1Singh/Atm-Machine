@@ -45,10 +45,11 @@ public class AtmOfBank {
 		System.out.println("\nEnter the bank code in which you have your bank account\n");
 		System.out.println("1) SBI");
 		System.out.println("2) PNB");
-		System.out.println("0 For terminating the application\n");
+		System.out.println("0) QUIT\n");
+		Scanner sc = new Scanner(System.in);
 		
 		try {
-			Scanner sc = new Scanner(System.in);
+			
 			int bankCode = sc.nextInt();
 
 			switch (bankCode) {
@@ -66,11 +67,10 @@ public class AtmOfBank {
 			}
 			
 		}catch(Exception e) {
-//			System.out.println("!!!!! WRONG INPUT !!!!!!");
-//			startAtm(atm);
-			
+			sc.nextLine();
+			System.out.println("\nWrong bank code!!!!");
+			new AtmOfBank().start();			
 		}
-		
 
 	}
 

@@ -138,11 +138,21 @@ public class Bank implements BankTransation {
 			System.out.println("7) LOG OUT FROM " + this.bankname);
 			System.out.println("0) QUIT");
 			System.out.println();
+			
+			
+			int task;
+			try{
+				task = sc.nextInt();
+				
+			}catch(Exception e) {
+				task = 100;
+				 sc.nextLine();
+				
+			}
 
-			int task = sc.nextInt();
 
 			if (task == 0) {
-				System.out.println("Program terminated");
+				System.out.println("Program Ended");
 				System.exit(0);
 			}
 
@@ -181,13 +191,11 @@ public class Bank implements BankTransation {
 
 			default:
 				System.out.println("Enter only valid action number");
+				break;
 
 			}
 
 		}
-
-//			System.out.println("This account does not exists");
-//			atm.startAtm(atm);
 
 	}
 
